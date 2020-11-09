@@ -11,23 +11,16 @@ app.set('view engine', 'ejs');
 app.listen(3000, () => {
     console.log('server is running on port 3000');
 });
-
 app.get('/', (req, res) => {
     res.status(200);
     res.render('./main.html');
 });
-app.post('/db', (req, res) => {
-    // db 접속해서 값을 리턴받아서 화에 뿌려주기
-
-    res.status(200).json({
-        data: [{
-            "name": "김대현",
-            "email": "tommy1003@naver.com",
-            "tel": "01022294267"
-        }, {
-            "name": "크리에이딧",
-            "email": "creadit2020@gmail.com",
-            "tel": "01020202020"
-        }]
-    });
+app.use('/db',require('./routes/db'));
+app.get('*',(req,res)=>{
+    console.log('404 err');
+    res.status(404).render('./error.html');
+})
+app.use(function(err,req,res,next){
+    console.log(err);
+    res.status(404).send('something broke!');
 });
