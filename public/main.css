@@ -1,0 +1,39 @@
+body {
+    all:unset;
+    background-color: cornsilk;
+}
+.wrapper {
+    margin: 0px auto;
+    padding-top: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.wrapper-title{
+    margin: 0px auto;
+    padding-bottom: 40px;
+    justify-content: center;
+}
+.form-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+}
+.wrapper form {
+  justify-content: center;
+}
+.info-wrapper {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-self: center;
+    align-content: center;
+}
+table {
+    width: 100%;
+    border: 1px solid #444444;
+    border-collapse: collapse;
+}
+th, td {
+    border: 1px solid #444444;
+}

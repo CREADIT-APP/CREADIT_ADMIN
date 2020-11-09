@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>CREADIT-ADMIN</title>
+    <link rel="stylesheet" type="text/css" href="/main.css">
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+</head>
+<body>
+<div class="wrapper">
+    <h1 class="wrapper-title">CREADIT 정보조회</h1>
+    <form class="form-wrapper" method="post" action="http://127.0.0.1:3000/db">
+        <select name="job" class="form-items">
+            <!--option value="">선택</option>-->
+            <option value="고객">고객</option>
+            <option value="코치">코치</option>
+        </select>
+        <input type="text" id="name" name="name" maxlength="8" size="10" placeholder="이름" class="form-items">
+        <input type="text" id="mail" name="mail" size="40" placeholder="이메일" class="form-items">
+        <button type="button"value="전송" onclick="sendData()" class="form-items">전송</button>
+    </form>
+    <div class="info-wrapper"></div>
+</div>
+</body>
+<script>
+    function addListenerToItem(){
+        const item_list = $('.form-items');
+        for(let i=1;i<item_list.length;++i){
+            item_list[i].addEventListener('keypress',(e)=>{
+                if(e.keyCode === 13) sendData();
+            });
+        }
+        return;
+    }
+    function checkIsEmpty() {
+        const check = $('.form-items option:selected').val();
+        const name = $('#name').val();
+        const mail = $('#mail').val();
+        const mail_regex = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
+        if (check === "") {
+            alert('고객/코치 를 선택해주세요');
+            return true;
+        }
+        if (name === "") {
+            alert('이름을 입력해주세요');
+            return true;
+        }
+        if (!mail_regex.test(mail)) {
+            alert('정상적인 값을 입력해주세요');
+            return true;
+        }
+        return false;
+    }
+
+    function sendData() {
+        const formData = $(".form-wrapper").serialize();
+
+        if (checkIsEmpty()) return;
+
+        $.ajax({
+            cache: false,
+            url: "/db",
+            type: 'POST',
+            data: formData,
+            success: function (data) { // data 는 json & field;
+                const info_wrapper = $('.info-wrapper');
+                // info_wrapper.innerHTML = makeHtmlSyntax(data);
+                info_wrapper.html(makeHtmlSyntax(data));
+            }, // success
+
+            error: function (xhr, status) {
+                alert(xhr + " : " + status);
+            }
+        });
+        return false;
+    }
+    function makeHtmlSyntax(response) {
+        const {data} = response;
+
+        // data는 object 배열
+        if (data[0] === null || data[0] === undefined) {
+            throw new Error("something is going wrong!");
+            return;
+        }
+        const keys = Object.keys(data[0]);
+        const thead = '<table><thead><tr>' + keys.map(e => {
+            return '<th>' + e + '</th>';
+        }).join('') + '</tr></thead>';
+
+        return thead + '<tbody>' + data.map(obj => { // elements 는 obj
+            const elements = Object.keys(obj);
+            return '<tr>' + elements.map(e => {
+                return '<td>' + obj[e] + '</td>';
+            }).join('') + '</tr>';
+        }).join('') + '</tbody></table>';
+        // name, email
+    }
+    addListenerToItem();
+</script>
+</html>
