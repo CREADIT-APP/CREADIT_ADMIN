@@ -4,10 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CREADIT-ADMIN</title>
-    <link rel="stylesheet" type="text/css" href="/main.css">
+    <link rel="stylesheet" type="text/css" href="/src/css/main.css">
     <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 </head>
 <body>
+<div class="aside-wrapper">
+    <ul class="menu-list">
+        <li class="menu-items"><a href="/">스케줄 및 정보 조회</a></li>
+        <li class="menu-items"><a href="/db/register">코치 등록</a></li>
+    </ul>
+</div>
 <div class="wrapper">
     <h1 class="wrapper-title">CREADIT 정보조회</h1>
     <form class="form-wrapper" method="post" action="http://127.0.0.1:3000/db">
@@ -104,17 +110,60 @@
             return;
         }
         const keys = Object.keys(data[0]);
-        const thead = '<table><thead><tr>' + keys.map(e => {
+        const thead = '<table><thead id="user-table-head"><tr id="user-table-tr"><th>체크</th>' + keys.map(e => {
             return '<th>' + e + '</th>';
         }).join('') + '</tr></thead>';
 
-        return thead + '<tbody>' + data.map(obj => { // elements 는 obj
+        return thead + '<tbody id="user-table">' + data.map((obj, idx) => { // elements 는 obj
             const elements = Object.keys(obj);
-            return '<tr>' + elements.map(e => {
-                return '<td>' + obj[e] + '</td>';
-            }).join('') + '</tr>';
-        }).join('') + '</tbody></table>';
+            return '<tr><td>' +
+                '<input type = "checkbox" id =' + `delete-checkbox${idx}` + ' class="delete-checkbox" value = "delete-check"/></td>' +
+                elements.map(e => {
+                    return '<td>' + obj[e] + '</td>';
+                }).join('') + '</tr>';
+        }).join('') + '</tbody></table><button id="delete-btn" onclick="popConfirm()">삭제</button>';
         // name, email
+    }
+
+    function getDeleteIndexList(check_boxes){
+        const delete_list = [];
+        for (let i = 0; i < check_boxes.length; ++i) {
+            if (check_boxes[i].checked === true) {
+                delete_list.push(i);
+            }
+        }
+        return delete_list;
+    }
+    function popConfirm(){
+        const table = document.getElementById('user-table');
+        const check_boxes = document.getElementsByClassName('delete-checkbox');
+        const delete_index_list = getDeleteIndexList(check_boxes);
+        const { children } = table;
+        const delete_arr = [];
+        const result = confirm(`총 ${delete_index_list.length}명의 정보를 정말 삭제하시겠습니까?`);
+
+        if (result) {
+            for(idx of delete_index_list){
+                delete_arr.push(makeDeleteObj(children[idx]));
+                table.deleteRow(idx);
+            }
+            delete_data(delete_arr);
+        } else {
+            alert('취소되었습니다.');
+        }
+    }
+    function makeDeleteObj(data){ // 삭제할 element map으로 반
+        const tr = document.getElementById('user-table-tr');
+        const obj = new Map();
+        for(let i=1;i<tr.children.length;++i){
+            obj.set(tr.children[i].textContent,data.children[i].textContent);
+        }
+        return obj;
+    }
+    function delete_data(delete_arr) {
+        // 리스트 가져와서 목록 삭제환
+        console.log({delete_arr});
+        alert('삭제되었습니다.');
     }
 
     addListenerToItem();
