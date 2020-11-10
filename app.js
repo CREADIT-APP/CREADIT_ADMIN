@@ -16,6 +16,8 @@ app.get('/', (req, res) => {
     res.render('./main.html');
 });
 app.use('/db',require('./routes/db'));
+
+// error handling
 app.get('*',(req,res)=>{
     console.log('404 err');
     res.status(404).render('./error.html');
