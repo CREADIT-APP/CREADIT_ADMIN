@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CREADIT-ADMIN</title>
     <link rel="stylesheet" type="text/css" href="/main.css">
     <script src="http://code.jquery.com/jquery-latest.min.js"></script>
@@ -16,7 +17,8 @@
             <option value="코치">코치</option>
         </select>
         <input type="text" id="name" name="name" maxlength="8" size="10" placeholder="이름" class="form-items">
-        <input type="text" id="mail" name="mail" size="40" placeholder="이메일" class="form-items">
+        <input type="email" id="mail" name="mail" size="30" placeholder="이메일" class="form-items">
+        <input type="tel" id="tel" name="tel" size="15" placeholder="핸드폰 번호" class="form-items">
         <button type="button"value="전송" onclick="sendData()" class="form-items">전송</button>
     </form>
     <div class="info-wrapper"></div>
@@ -36,7 +38,10 @@
         const check = $('.form-items option:selected').val();
         const name = $('#name').val();
         const mail = $('#mail').val();
+        const tel = $('#tel').val();
         const mail_regex = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
+        const tel_regex = /^\d{2,3}\d{3,4}\d{4}$/;
+
         if (check === "") {
             alert('고객/코치 를 선택해주세요');
             return true;
@@ -47,6 +52,10 @@
         }
         if (!mail_regex.test(mail)) {
             alert('정상적인 값을 입력해주세요');
+            return true;
+        }
+        if(!tel_regex.test(tel) && tel !== ''){
+            alert('번호 양식이 맞지않습니다.');
             return true;
         }
         return false;
