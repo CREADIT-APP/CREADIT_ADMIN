@@ -19,21 +19,32 @@
         <input type="text" id="name" name="name" maxlength="8" size="10" placeholder="이름" class="form-items">
         <input type="email" id="mail" name="mail" size="30" placeholder="이메일" class="form-items">
         <input type="tel" id="tel" name="tel" size="15" placeholder="핸드폰 번호" class="form-items">
-        <button type="button"value="전송" onclick="sendData()" class="form-items">전송</button>
+        <button type="button" value="검색" onclick="sendData()" class="form-items">검색</button>
+        <button type="button" value="초기화" onclick="resetData()" class="form-items">초기화</button>
     </form>
     <div class="info-wrapper"></div>
 </div>
 </body>
 <script>
-    function addListenerToItem(){
+    function resetData() {
+        $('.form-items option:selected').val('');
+        $('#name').val('');
+        $('#mail').val('');
+        $('#tel').val('');
+        $('#name').focus();
+        return;
+    }
+
+    function addListenerToItem() {
         const item_list = $('.form-items');
-        for(let i=1;i<item_list.length;++i){
-            item_list[i].addEventListener('keypress',(e)=>{
-                if(e.keyCode === 13) sendData();
+        for (let i = 1; i < item_list.length; ++i) {
+            item_list[i].addEventListener('keypress', (e) => {
+                if (e.keyCode === 13) sendData();
             });
         }
         return;
     }
+
     function checkIsEmpty() {
         const check = $('.form-items option:selected').val();
         const name = $('#name').val();
@@ -51,10 +62,10 @@
             return true;
         }
         if (!mail_regex.test(mail)) {
-            alert('정상적인 값을 입력해주세요');
+            alert('이메일 양식이 맞지않습니다.');
             return true;
         }
-        if(!tel_regex.test(tel) && tel !== ''){
+        if (!tel_regex.test(tel) && tel !== '') {
             alert('번호 양식이 맞지않습니다.');
             return true;
         }
@@ -83,6 +94,7 @@
         });
         return false;
     }
+
     function makeHtmlSyntax(response) {
         const {data} = response;
 
@@ -104,6 +116,7 @@
         }).join('') + '</tbody></table>';
         // name, email
     }
+
     addListenerToItem();
 </script>
 </html>
