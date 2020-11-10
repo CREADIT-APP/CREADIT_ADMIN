@@ -18,14 +18,13 @@
     <h1 class="wrapper-title">CREADIT 코치등록</h1>
     <form class="form-wrapper" method="post" action="http://127.0.0.1:3000/db">
         <select name="job" class="form-items">
-            <!--option value="">선택</option>-->
             <option value="등록">등록</option>
-            <option value="삭제">삭제</option>
+            <!--            <option value="삭제">삭제</option>-->
         </select>
         <input type="text" id="name" name="name" maxlength="8" size="10" placeholder="이름" class="form-items">
         <input type="email" id="mail" name="mail" size="30" placeholder="이메일" class="form-items">
         <input type="tel" id="tel" name="tel" size="15" placeholder="핸드폰 번호" class="form-items">
-        <button type="button" value="검색" onclick="sendData()" class="form-items">검색</button>
+        <button type="button" value="등" onclick="sendData()" class="form-items">등록</button>
         <button type="button" value="초기화" onclick="resetData()" class="form-items">초기화</button>
     </form>
     <div class="info-wrapper"></div>
@@ -58,6 +57,7 @@
         }
         return false;
     }
+
     function sendData() {
         const formData = $(".form-wrapper").serialize();
 
@@ -68,10 +68,16 @@
             url: "/db",
             type: 'POST',
             data: formData,
-            success: function (data) { // data 는 json & field;
-                const info_wrapper = $('.info-wrapper');
-                // info_wrapper.innerHTML = makeHtmlSyntax(data);
-                info_wrapper.html(makeHtmlSyntax(data));
+            success: function (data) { // data 는 json & field
+                //db에 정보 업데이트
+                const result = confirm('해당 코치를 등록하시겠습니까?');
+
+                if (result) { // 확인을 눌렀을 경우
+                    // db에 정보 업데이트
+                    alert('성공적으로 등록했습니다.');
+                } else { // 취소를 눌렀을 경우
+                    alert('취소되었습니다.');
+                }
             }, // success
 
             error: function (xhr, status) {
@@ -80,6 +86,7 @@
         });
         return false;
     }
+
     addListenerToItem();
 </script>
 </body>

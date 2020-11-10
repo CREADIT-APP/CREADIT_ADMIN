@@ -48,6 +48,9 @@ th, td {
     padding: 20px;
     list-style: none;
 }
+.form-items {
+    padding: 3px;
+}
 a:link { color:black; text-decoration: none;}
 a:visited { color: black; text-decoration: none;}
 a:hover { color: blue; text-decoration: underline;}

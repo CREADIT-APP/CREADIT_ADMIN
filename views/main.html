@@ -32,7 +32,7 @@
 </div>
 </body>
 <script>
-    function resetData() {
+    function resetData() { // 데이터 초기화.
         $('.form-items option:selected').val('');
         $('#name').val('');
         $('#mail').val('');
@@ -41,7 +41,7 @@
         return;
     }
 
-    function addListenerToItem() {
+    function addListenerToItem() { // 이벤트 리스너 등록.
         const item_list = $('.form-items');
         for (let i = 1; i < item_list.length; ++i) {
             item_list[i].addEventListener('keypress', (e) => {
@@ -51,7 +51,7 @@
         return;
     }
 
-    function checkIsEmpty() {
+    function checkIsEmpty() { // 유효성 체크.
         const check = $('.form-items option:selected').val();
         const name = $('#name').val();
         const mail = $('#mail').val();
@@ -78,7 +78,7 @@
         return false;
     }
 
-    function sendData() {
+    function sendData() { // form 데이터 전송.
         const formData = $(".form-wrapper").serialize();
 
         if (checkIsEmpty()) return;
@@ -101,7 +101,7 @@
         return false;
     }
 
-    function makeHtmlSyntax(response) {
+    function makeHtmlSyntax(response) { // 테이블 생성.
         const {data} = response;
 
         // data는 object 배열
@@ -115,17 +115,23 @@
         }).join('') + '</tr></thead>';
 
         return thead + '<tbody id="user-table">' + data.map((obj, idx) => { // elements 는 obj
-            const elements = Object.keys(obj);
-            return '<tr><td>' +
-                '<input type = "checkbox" id =' + `delete-checkbox${idx}` + ' class="delete-checkbox" value = "delete-check"/></td>' +
-                elements.map(e => {
-                    return '<td>' + obj[e] + '</td>';
-                }).join('') + '</tr>';
-        }).join('') + '</tbody></table><button id="delete-btn" onclick="popConfirm()">삭제</button>';
+                const elements = Object.keys(obj);
+                return '<tr><td>' +
+                    '<input type = "checkbox" id =' + `delete-checkbox${idx}` + ' class="delete-checkbox" value = "delete-check"/></td>' +
+                    elements.map(e => {
+                        return '<td>' + obj[e] + '</td>';
+                    }).join('') + '</tr>';
+            }).join('') +
+            '</tbody></table>' +
+            '<div class="btn-wrapper">' +
+            '<button id="modify-btn" onclick="pop_mod_confirm()">수정</button><button id="delete-btn" onclick="pop_delete_confirm()">삭제</button>' +
+            '</div>';
         // name, email
     }
-
-    function getDeleteIndexList(check_boxes){
+    function pop_mod_confirm(){
+        alert('코딩중');
+    }
+    function getDeleteIndexList(check_boxes) { // 삭제할 index리스트 반환.
         const delete_list = [];
         for (let i = 0; i < check_boxes.length; ++i) {
             if (check_boxes[i].checked === true) {
@@ -134,35 +140,39 @@
         }
         return delete_list;
     }
-    function popConfirm(){
+
+    function pop_delete_confirm() {
         const table = document.getElementById('user-table');
         const check_boxes = document.getElementsByClassName('delete-checkbox');
         const delete_index_list = getDeleteIndexList(check_boxes);
-        const { children } = table;
+        const {children} = table;
         const delete_arr = [];
         const result = confirm(`총 ${delete_index_list.length}명의 정보를 정말 삭제하시겠습니까?`);
 
-        if (result) {
-            for(idx of delete_index_list){
+        if (result) { // 확인을 눌렀을 경우
+            for (idx of delete_index_list) {
                 delete_arr.push(makeDeleteObj(children[idx]));
-                table.deleteRow(idx);
+                // table.deleteRow(idx); 여기가 주석처리 되고 delete_data내부에서 db 결과 projection
             }
             delete_data(delete_arr);
-        } else {
+        } else { // 취소를 눌렀을 경우.
             alert('취소되었습니다.');
         }
     }
-    function makeDeleteObj(data){ // 삭제할 element map으로 반
+
+    function makeDeleteObj(data) { // 삭제할 element object로 리턴.
         const tr = document.getElementById('user-table-tr');
         const obj = new Map();
-        for(let i=1;i<tr.children.length;++i){
-            obj.set(tr.children[i].textContent,data.children[i].textContent);
+        for (let i = 1; i < tr.children.length; ++i) {
+            obj.set(tr.children[i].textContent, data.children[i].textContent);
         }
         return obj;
     }
-    function delete_data(delete_arr) {
-        // 리스트 가져와서 목록 삭제환
+
+    function delete_data(delete_arr) { // db 접속해서 정보 업데이트.
+        // 리스트 가져와서 목록 삭제함.
         console.log({delete_arr});
+        sendData();
         alert('삭제되었습니다.');
     }
 
