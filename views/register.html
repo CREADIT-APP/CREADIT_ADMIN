@@ -17,14 +17,16 @@
 <div class="wrapper">
     <h1 class="wrapper-title">CREADIT 코치등록</h1>
     <form class="form-wrapper" method="post" action="http://127.0.0.1:3000/db">
-        <select name="job" class="form-items">
+        <select name="choose" class="form-items">
+            <option value="선택">선택</option>
             <option value="등록">등록</option>
-            <!--            <option value="삭제">삭제</option>-->
+            <option value="삭제">삭제</option>
+            <option value="조회">조회</option>
         </select>
         <input type="text" id="name" name="name" maxlength="8" size="10" placeholder="이름" class="form-items">
         <input type="email" id="mail" name="mail" size="30" placeholder="이메일" class="form-items">
         <input type="tel" id="tel" name="tel" size="15" placeholder="핸드폰 번호" class="form-items">
-        <button type="button" value="등" onclick="sendData()" class="form-items">등록</button>
+        <button type="button" value="확인" onclick="sendData()" class="form-items">확인</button>
         <button type="button" value="초기화" onclick="resetData()" class="form-items">초기화</button>
     </form>
     <div class="info-wrapper"></div>
@@ -38,16 +40,18 @@
         const mail_regex = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
         const tel_regex = /^\d{2,3}\d{3,4}\d{4}$/;
 
-        console.log({check});
-        if (check === "삭제") {
-            confirm('정말 삭제하시겠습니까?');
+        if (check === "선택") {
+            alert("삭제/등록을 선택해주세요.");
             return true;
+        }
+        if (name === "" && mail === "" && tel === "") {
+            return false;
         }
         if (name === "") {
-            alert('이름을 입력해주세요');
+            alert('이름을 입력해주세요.');
             return true;
         }
-        if (!mail_regex.test(mail)) {
+        if (!mail_regex.test(mail) && mail !== '') {
             alert('이메일 양식이 맞지않습니다.');
             return true;
         }
@@ -57,26 +61,64 @@
         }
         return false;
     }
+    function makeHtmlSyntax(response) { // 테이블 생성.
+        const data = response;
+        // data는 object 배열
+        if (data[0] === null || data[0] === undefined) {
+            throw new Error("something is going wrong!");
+            return;
+        }
+        const keys = Object.keys(data[0]);
+        const thead = '<table><thead id="user-table-head"><tr id="user-table-tr"><th>체크</th>' + keys.map(e => {
+            return '<th>' + e + '</th>';
+        }).join('') + '</tr></thead>';
 
-    function sendData() {
+        return thead + '<tbody id="user-table">' + data.map((obj, idx) => { // elements 는 obj
+                const elements = Object.keys(obj);
+                return '<tr><td>' +
+                    '<input type = "checkbox" id =' + `delete-checkbox${idx}` + ' class="delete-checkbox" value = "delete-check"/></td>' +
+                    elements.map(e => {
+                        return '<td>' + obj[e] + '</td>';
+                    }).join('') + '</tr>';
+            }).join('') +
+            '</tbody></table>' +
+            '<div class="btn-wrapper">' +
+            '<button id="modify-btn" onclick="pop_mod_confirm()">수정</button><button id="delete-btn" onclick="pop_delete_confirm()">삭제</button>' +
+            '</div>';
+        // name, email
+    }
+    function getAllCoachData(){
         const formData = $(".form-wrapper").serialize();
-
-        if (checkIsEmpty()) return;
-
         $.ajax({
             cache: false,
-            url: "/db",
+            url: "/db/coach",
             type: 'POST',
             data: formData,
             success: function (data) { // data 는 json & field
-                //db에 정보 업데이트
-                const result = confirm('해당 코치를 등록하시겠습니까?');
+                const info_wrapper = $('.info-wrapper');
+                // info_wrapper.innerHTML = makeHtmlSyntax(data);
+                info_wrapper.html(makeHtmlSyntax(data));
+            }, // success
 
-                if (result) { // 확인을 눌렀을 경우
-                    // db에 정보 업데이트
-                    alert('성공적으로 등록했습니다.');
-                } else { // 취소를 눌렀을 경우
-                    alert('취소되었습니다.');
+            error: function (xhr, status) {
+                alert(xhr + " : " + status);
+            }
+        });
+    }
+    function deleteCoachData() {
+        const formData = $(".form-wrapper").serialize();
+        $.ajax({
+            cache: false,
+            url: "/db/coach/delete",
+            type: 'POST',
+            data: formData,
+            success: function (response) { // data 는 json & field
+                //db에 정보 업데이트
+                const {affectedRows} = response;
+                if (affectedRows !== 0) {
+                    alert('성공적으로 삭제되었습니다.');
+                } else {
+                    alert('에러발생');
                 }
             }, // success
 
@@ -84,9 +126,67 @@
                 alert(xhr + " : " + status);
             }
         });
-        return false;
     }
 
+    function registerCoachData() {
+        const formData = $(".form-wrapper").serialize();
+        $.ajax({
+            cache: false,
+            url: "/db/coach/register",
+            type: 'POST',
+            data: formData,
+            success: function (response) { // data 는 json & field
+                //db에 정보 업데이트
+                const {affectedRows} = response;
+                if (affectedRows === 0) {
+                    alert('해당 코치 정보가 이미 있습니다.');
+                } else {
+                    alert('등록되었습니다.');
+                }
+                // const {data} = response;
+                // if (data[0] === null || data[0] === undefined) {
+                //     throw new Error("something is going wrong!");
+                //     return;
+                // }
+                // const result = confirm('해당 코치를 등록하시겠습니까?');
+                // if (result) { // 확인을 눌렀을 경우
+                //     // db에 정보 업데이트
+                //     alert('성공적으로 등록했습니다.');
+                // } else { // 취소를 눌렀을 경우
+                //     alert('취소되었습니다.');
+                // }
+            }, // success
+
+            error: function (xhr, status) {
+                alert(xhr + " : " + status);
+            }
+        });
+    }
+
+    function sendData() {
+        const check = $('.form-items option:selected').val();
+        if (checkIsEmpty()) return;
+        if (check === "삭제") {
+            const result = confirm('정말 삭제하시겠습니까?');
+            if (result) {
+                deleteCoachData();
+            } else {
+                alert('취소 되었습니다.');
+            }
+            return true;
+        } else if (check === "등록") {
+            const result = confirm('해당 정보로 등록하시겠습니까?');
+            if (result) {
+                registerCoachData();
+            } else {
+                alert('취소 되었습니다.');
+            }
+        } else if( check === "조회"){
+            alert('코치 정보를 조회합니다.');
+            getAllCoachData();
+        }
+        return false;
+    }
     addListenerToItem();
 </script>
 </body>

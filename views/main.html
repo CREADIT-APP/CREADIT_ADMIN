@@ -17,7 +17,7 @@
 <div class="wrapper">
     <h1 class="wrapper-title">CREADIT 정보조회</h1>
     <form class="form-wrapper" method="post" action="http://127.0.0.1:3000/db">
-        <select name="job" class="form-items">
+        <select name="choose" class="form-items">
             <!--option value="">선택</option>-->
             <option value="고객">고객</option>
             <option value="코치">코치</option>
@@ -59,15 +59,15 @@
         const mail_regex = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
         const tel_regex = /^\d{2,3}\d{3,4}\d{4}$/;
 
-        if (check === "") {
-            alert('고객/코치 를 선택해주세요');
-            return true;
+        if (name === "" && mail === "" && tel === "") {
+            alert(`${check} 리스트를 출력합니다.`);
+            return false;
         }
         if (name === "") {
             alert('이름을 입력해주세요');
             return true;
         }
-        if (!mail_regex.test(mail)) {
+        if (!mail_regex.test(mail) && mail !== '') {
             alert('이메일 양식이 맞지않습니다.');
             return true;
         }
@@ -79,13 +79,21 @@
     }
 
     function sendData() { // form 데이터 전송.
-        const formData = $(".form-wrapper").serialize();
-
+        const check = $('.form-items option:selected').val();
         if (checkIsEmpty()) return;
+        if (check === "고객") {
+            getMemberData();
+        } else if (check === "코치") {
+            getCoachData();
+        }
+        return false;
+    }
 
+    function getCoachData() {
+        const formData = $(".form-wrapper").serialize();
         $.ajax({
             cache: false,
-            url: "/db",
+            url: "/db/coach",
             type: 'POST',
             data: formData,
             success: function (data) { // data 는 json & field;
@@ -98,12 +106,29 @@
                 alert(xhr + " : " + status);
             }
         });
-        return false;
+    }
+
+    function getMemberData() {
+        const formData = $(".form-wrapper").serialize();
+        $.ajax({
+            cache: false,
+            url: "/db/member",
+            type: 'POST',
+            data: formData,
+            success: function (data) { // data 는 json & field;
+                const info_wrapper = $('.info-wrapper');
+                // info_wrapper.innerHTML = makeHtmlSyntax(data);
+                info_wrapper.html(makeHtmlSyntax(data));
+            }, // success
+
+            error: function (xhr, status) {
+                alert(xhr + " : " + status);
+            }
+        });
     }
 
     function makeHtmlSyntax(response) { // 테이블 생성.
-        const {data} = response;
-
+        const data = response;
         // data는 object 배열
         if (data[0] === null || data[0] === undefined) {
             throw new Error("something is going wrong!");
@@ -128,9 +153,11 @@
             '</div>';
         // name, email
     }
-    function pop_mod_confirm(){
+
+    function pop_mod_confirm() {
         alert('코딩중');
     }
+
     function getDeleteIndexList(check_boxes) { // 삭제할 index리스트 반환.
         const delete_list = [];
         for (let i = 0; i < check_boxes.length; ++i) {
