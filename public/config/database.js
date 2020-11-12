@@ -49,7 +49,7 @@ function getMemberInfo(name, tel = 'null', email = 'null') {
 
 // coach sql
 function getCoachSchedule(name,title){
-    const SQL = `SELECT * from Payment where `
+    // const SQL = `SELECT * from Payment where `
 }
 function insertCoachDataByTel(name, tel, email = 'null') {
     const SQL = `INSERT IGNORE INTO Coach (name,email,tel) values(\"${name}\",\"${email}\",\"${tel}\")`;
