@@ -48,6 +48,9 @@ function getMemberInfo(name, tel = 'null', email = 'null') {
 }
 
 // coach sql
+function getCoachSchedule(name,title){
+    const SQL = `SELECT * from Payment where `
+}
 function insertCoachDataByTel(name, tel, email = 'null') {
     console.log({name, email, tel});
     const SQL = `INSERT IGNORE INTO Coach (name,email,tel) values(\"${name}\",\"${email}\",\"${tel}\")`;
@@ -75,6 +78,14 @@ function deleteCoachInfoByTel(name, tel) {
     const SQL = `DELETE FROM Coach WHERE name=\"${name}\" AND tel=\"${tel}\"`;
     return executeSQL(SQL);
 }
+function getCoachPayments(id){
+    const SQL =
+       `SELECT m.member_id,m.name,m.tel,m.email,p.payment_date,p.refund_account,p.youtube_link,p.payment_value
+        FROM Payment AS p
+        JOIN Member As m
+        WHERE p.coach_id=${id}`;
+    return executeSQL(SQL);
+}
 
 
 module.exports = {
@@ -82,8 +93,9 @@ module.exports = {
     executeSQL, createConnection,
 
     // coach sql
-    insertCoachDataByTel, getAllCoachList, getCoachInfo, deleteCoachInfoByTel,
+    insertCoachDataByTel, getAllCoachList, getCoachInfo, deleteCoachInfoByTel,getCoachPayments,
 
     // member sql
-    getAllMemberList, getMemberInfo
+    getAllMemberList, getMemberInfo,
+
 };

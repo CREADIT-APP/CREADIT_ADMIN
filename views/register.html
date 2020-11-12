@@ -82,9 +82,9 @@
                     }).join('') + '</tr>';
             }).join('') +
             '</tbody></table>' +
-            '<div class="btn-wrapper">' +
+            '<div class="btn-wrapper">';/* +
             '<button id="modify-btn" onclick="pop_mod_confirm()">수정</button><button id="delete-btn" onclick="pop_delete_confirm()">삭제</button>' +
-            '</div>';
+            '</div>';*/
         // name, email
     }
     function getAllCoachData(){
@@ -185,6 +185,7 @@
             alert('코치 정보를 조회합니다.');
             getAllCoachData();
         }
+        $('#name').focus();
         return false;
     }
     addListenerToItem();

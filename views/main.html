@@ -17,7 +17,7 @@
 <div class="wrapper">
     <h1 class="wrapper-title">CREADIT 정보조회</h1>
     <form class="form-wrapper" method="post" action="http://127.0.0.1:3000/db">
-        <select name="choose" class="form-items">
+        <select name="choose" id="choose" class="form-items">
             <!--option value="">선택</option>-->
             <option value="고객">고객</option>
             <option value="코치">코치</option>
@@ -49,6 +49,33 @@
             });
         }
         return;
+    }
+
+    function addListenerToTable() {
+        // const formData = $(".form-wrapper").serialize();
+        document.querySelectorAll('#user-table tr')
+            .forEach(e => e.addEventListener("click", function () {
+                const tr = $(this);
+                const td = tr.children();
+
+                const formData = {};
+                formData['id'] = td.eq(1).text();
+
+                $.ajax({
+                    cache: false,
+                    url: "/db/coach/payments",
+                    type: 'POST',
+                    data: formData,
+                    success: function (data) { // data 는 json & field;
+                        console.log(data);
+                        addListenerToTable();
+                    }, // success
+
+                    error: function (xhr, status) {
+                        alert(xhr + " : " + status);
+                    }
+                });
+            }));
     }
 
     function checkIsEmpty() { // 유효성 체크.
@@ -86,6 +113,7 @@
         } else if (check === "코치") {
             getCoachData();
         }
+        $('#name').focus();
         return false;
     }
 
@@ -100,6 +128,8 @@
                 const info_wrapper = $('.info-wrapper');
                 // info_wrapper.innerHTML = makeHtmlSyntax(data);
                 info_wrapper.html(makeHtmlSyntax(data));
+                addListenerToTable();
+
             }, // success
 
             error: function (xhr, status) {
@@ -119,12 +149,64 @@
                 const info_wrapper = $('.info-wrapper');
                 // info_wrapper.innerHTML = makeHtmlSyntax(data);
                 info_wrapper.html(makeHtmlSyntax(data));
+
             }, // success
 
             error: function (xhr, status) {
                 alert(xhr + " : " + status);
             }
         });
+    }
+    function makeTable(data) {
+        const {data} = response;
+
+        if (data[0] === null || data[0] === undefined) {
+            throw new Error("something is going wrong!");
+            return;
+        }
+        const keys = Object.keys(data[0]);
+
+        const info_wrapper = $('.info-wrapper');
+        const table = document.createElement('table');
+        const tbody = document.createElement('tbody');
+        // const thead = '<table id="user-table-origin"><thead id="user-table-head"><tr id="user-table-tr"><th>체크</th>' + keys.map(e => {
+        //     return '<th>' + e + '</th>';
+        // }).join('') + '</tr></thead>';
+        const thead = document.createElement('thead');
+
+        table.setAttribute('id', 'user-table-origin');
+        thead.setAttribute('id', 'user-table-head');
+        tbody.setAttribute('id', 'user-table');
+
+        thead.append(
+            '<tr id="user-table-tr"><th>체크</th>' +
+            keys.map(e => {
+                return '<th>' + e + '</th>';
+            }).join('')
+        )
+        tbody.append(
+            data.map(e=>{
+               return addRow(e,idx);
+            }).join("")
+        );
+        // data.map((obj, idx) => { // elements 는 obj
+        //     const elements = Object.keys(obj);
+        //     return '<tr><td>' +
+        //         '<input type = "checkbox" id =' + `delete-checkbox${idx}` + ' class="delete-checkbox" value = "delete-check"/></td>' +
+        //         elements.map(e => {
+        //             return '<td>' + obj[e] + '</td>';
+        //         }).join('') + '</tr>';
+        // }).join('')
+
+        table.appendChild(thead);
+        table.appendChild(tbody);
+        info_wrapper.appendChild(table);
+    }
+    function addRow(obj,idx) {
+        const elements = Object.keys(obj);
+        const tr = document.createElement('tr');
+
+        return
     }
 
     function makeHtmlSyntax(response) { // 테이블 생성.
@@ -135,7 +217,7 @@
             return;
         }
         const keys = Object.keys(data[0]);
-        const thead = '<table><thead id="user-table-head"><tr id="user-table-tr"><th>체크</th>' + keys.map(e => {
+        const thead = '<table id="user-table-origin"><thead id="user-table-head"><tr id="user-table-tr"><th>체크</th>' + keys.map(e => {
             return '<th>' + e + '</th>';
         }).join('') + '</tr></thead>';
 
@@ -147,15 +229,11 @@
                         return '<td>' + obj[e] + '</td>';
                     }).join('') + '</tr>';
             }).join('') +
-            '</tbody></table>' +
+            '</tbody></table>';/* +
             '<div class="btn-wrapper">' +
             '<button id="modify-btn" onclick="pop_mod_confirm()">수정</button><button id="delete-btn" onclick="pop_delete_confirm()">삭제</button>' +
-            '</div>';
+            '</div>';*/
         // name, email
-    }
-
-    function pop_mod_confirm() {
-        alert('코딩중');
     }
 
     function getDeleteIndexList(check_boxes) { // 삭제할 index리스트 반환.
@@ -166,6 +244,10 @@
             }
         }
         return delete_list;
+    }
+
+    function pop_mod_confirm() {
+        alert('코딩중');
     }
 
     function pop_delete_confirm() {

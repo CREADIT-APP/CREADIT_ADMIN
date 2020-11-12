@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const {
     insertCoachDataByTel, getAllCoachList, deleteCoachInfoByTel, getCoachInfo,
-    getAllMemberList, getMemberInfo
+    getAllMemberList, getCoachPayments
 } = require("../public/config/database");
 
 router.post('/', (req, res) => {
@@ -49,6 +49,8 @@ router.post("/member", (req, res) => { // member 정보 뿌려주기.
     }
 });
 router.post("/coach", (req, res) => { // coach 정보 뿌려주기.
+    const tmp = req.body;
+    console.log(tmp);
     const {name, tel, email} = req.body;
     if (name === '') {
         getAllCoachList().then(data => {
@@ -65,6 +67,11 @@ router.post("/coach", (req, res) => { // coach 정보 뿌려주기.
             });
         }
     }
+});
+router.post("/coach/payments",(req,res)=>{
+    const { id } = req.body;
+    console.log('도착, ',id);
+    getCoachPayments(id).then(e=>{console.log({e})});
 });
 router.post("/coach/register", (req, res) => { // coach 등록.
     const {name, tel} = req.body;
