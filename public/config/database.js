@@ -30,6 +30,10 @@ function executeSQL(sql) {
 }
 
 // member sql
+function insertMember(name,tel,email='null'){ // 생년월일도 추가하면 좋을듯
+    const SQL = `INSERT IGNORE INTO Member (name,email,tel) values(\"${name}\",\"${email}\",\"${tel}\")`;
+    return executeSQL(SQL);
+}
 function getAllMemberList() {
     const SQL = `SELECT * FROM Member`;
     return executeSQL(SQL);
@@ -48,9 +52,9 @@ function getMemberInfo(name, tel = 'null', email = 'null') {
 }
 
 // coach sql
-function getCoachSchedule(name,title){
-    // const SQL = `SELECT * from Payment where `
-}
+// function getCoachSchedule(name,title){
+//     // const SQL = `SELECT * from Payment where `
+// }
 function insertCoachDataByTel(name, tel, email = 'null') {
     const SQL = `INSERT IGNORE INTO Coach (name,email,tel) values(\"${name}\",\"${email}\",\"${tel}\")`;
     return executeSQL(SQL);
@@ -95,6 +99,6 @@ module.exports = {
     insertCoachDataByTel, getAllCoachList, getCoachInfo, deleteCoachInfoByTel,getCoachPayments,
 
     // member sql
-    getAllMemberList, getMemberInfo,
+    getAllMemberList, insertMember, getMemberInfo,
 
 };

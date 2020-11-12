@@ -1,8 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const {
-    insertCoachDataByTel, getAllCoachList, deleteCoachInfoByTel, getCoachInfo,
-    getAllMemberList, getCoachPayments
+    //coach
+    insertCoachDataByTel, getAllCoachList, deleteCoachInfoByTel, getCoachInfo, getCoachPayments,
+
+    //member
+    getAllMemberList, insertMember
 } = require("../public/config/database");
 
 router.post('/', (req, res) => {
@@ -48,9 +51,11 @@ router.post("/member", (req, res) => { // member 정보 뿌려주기.
         }
     }
 });
+router.post("/member/register", (req, res) => {
+    const {name, tel, email} = req.body;
+    insertMember(name,tel,email).then(data=>res.send(data));
+});
 router.post("/coach", (req, res) => { // coach 정보 뿌려주기.
-    const tmp = req.body;
-    console.log(tmp);
     const {name, tel, email} = req.body;
     if (name === '') {
         getAllCoachList().then(data => {
@@ -68,9 +73,9 @@ router.post("/coach", (req, res) => { // coach 정보 뿌려주기.
         }
     }
 });
-router.post("/coach/payments",(req,res)=>{
-    const { id } = req.body;
-    getCoachPayments(id).then(data=>res.send(data));
+router.post("/coach/payments", (req, res) => {
+    const {id} = req.body;
+    getCoachPayments(id).then(data => res.send(data));
 });
 router.post("/coach/register", (req, res) => { // coach 등록.
     const {name, tel} = req.body;

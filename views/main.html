@@ -59,8 +59,8 @@
                 const td = tr.children();
 
                 const formData = {};
-                formData['id'] = td.eq(1).text();
-
+                // formData['id'] = td.eq(1).text();
+                formData['id'] = td.eq(0).text();
                 $.ajax({
                     cache: false,
                     url: "/db/coach/payments",
@@ -167,7 +167,7 @@
         const tbody = document.createElement('tbody');
         const thead = document.createElement('thead');
         const tr = makeTrTag('user-table-tr');
-        tr.appendChild(makeThTag('체크'));
+        // tr.appendChild(makeThTag('체크'));
 
         table.setAttribute('id', 'user-table-origin');
         thead.setAttribute('id', 'user-table-head');
@@ -175,30 +175,37 @@
 
         // thead 작성
         thead.appendChild(tr);
-        keys.forEach(e=>{tr.append(makeThTag(e))});
+        keys.forEach(e => {
+            tr.append(makeThTag(e))
+        });
 
         // thead 작성
         tbody.appendChild(thead);
-        data.forEach((e,idx)=>{tbody.append(addRow(e,idx))});
+        data.forEach((e, idx) => {
+            tbody.append(addRow(e, idx))
+        });
 
         table.appendChild(thead);
         table.appendChild(tbody);
         info_wrapper.html(table);
     }
-    function makeThTag(text='',id=''){
+
+    function makeThTag(text = '', id = '') {
         const th = document.createElement('th');
         th.innerHTML = text;
-        id === '' ? true : th.setAttribute('id',id);
+        id === '' ? true : th.setAttribute('id', id);
         return th;
     }
-    function makeTrTag(id){
+
+    function makeTrTag(id) {
         const tr = document.createElement('tr');
-        tr.setAttribute('id',id);
+        tr.setAttribute('id', id);
         return tr;
     }
-    function makeTdTag(text='',id=''){
+
+    function makeTdTag(text = '', id = '') {
         const td = document.createElement('td');
-        td.setAttribute('id',id);
+        td.setAttribute('id', id);
         td.innerHTML = text;
         return td;
     }
@@ -207,23 +214,23 @@
         // row 생성에 필요한 변수들 선언
         const tr = makeTrTag();
         const input_td = makeTdTag();
-        const input = document.createElement('input');
+        // const input = document.createElement('input');
         const elements = Object.keys(obj);
 
         // 속성값 설정
-        input.setAttribute('type','checkbox');
-        input.setAttribute('id',`delete-checkbox${idx}`);
-        input.setAttribute('class',`delete-checkbox`);
-        input.setAttribute('value','delete-checkbox');
+        // input.setAttribute('type','checkbox');
+        // input.setAttribute('id',`delete-checkbox${idx}`);
+        // input.setAttribute('class',`delete-checkbox`);
+        // input.setAttribute('value','delete-checkbox');
 
         // append child
-        input_td.appendChild(input);
-        tr.appendChild(input_td);
+        // input_td.appendChild(input);
+        // tr.appendChild(input_td);
 
-        elements.forEach(e=>{
-           const td = makeTdTag();
-           td.innerHTML = obj[e];
-           tr.appendChild(td);
+        elements.forEach(e => {
+            const td = makeTdTag();
+            td.innerHTML = obj[e];
+            tr.appendChild(td);
         });
         return tr;
     }
