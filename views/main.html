@@ -15,7 +15,7 @@
     </ul>
 </div>
 <div class="wrapper">
-    <h1 class="wrapper-title">CREADIT 정보조회</h1>
+    <h1 class="wrapper-title"><a href="/">CREADIT 정보조회</a></h1>
     <form class="form-wrapper" method="post" action="http://127.0.0.1:3000/db">
         <select name="choose" id="choose" class="form-items">
             <!--option value="">선택</option>-->
@@ -67,7 +67,7 @@
                     type: 'POST',
                     data: formData,
                     success: function (data) { // data 는 json & field;
-                        // console.log(data);
+                        console.log(data);
                         makeTable(data);
 
                         // addListenerToTable();
@@ -157,7 +157,7 @@
     function makeTable(response) {
         const data = response;
         if (data[0] === null || data[0] === undefined) {
-            throw new Error("something is going wrong!");
+            alert('조회 정보가 없거나 일시적 오류입니다.');
             return;
         }
         const keys = Object.keys(data[0]);
