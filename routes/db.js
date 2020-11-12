@@ -71,7 +71,7 @@ router.post("/coach", (req, res) => { // coach 정보 뿌려주기.
 router.post("/coach/payments",(req,res)=>{
     const { id } = req.body;
     console.log('도착, ',id);
-    getCoachPayments(id).then(e=>{console.log({e})});
+    getCoachPayments(id).then(data=>res.send(data));
 });
 router.post("/coach/register", (req, res) => { // coach 등록.
     const {name, tel} = req.body;

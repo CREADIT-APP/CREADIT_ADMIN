@@ -67,7 +67,8 @@
                     type: 'POST',
                     data: formData,
                     success: function (data) { // data 는 json & field;
-                        console.log(data);
+                        // console.log(data);
+                        makeTable(data);
                         addListenerToTable();
                     }, // success
 
@@ -125,11 +126,8 @@
             type: 'POST',
             data: formData,
             success: function (data) { // data 는 json & field;
-                const info_wrapper = $('.info-wrapper');
-                // info_wrapper.innerHTML = makeHtmlSyntax(data);
-                info_wrapper.html(makeHtmlSyntax(data));
+                makeTable(data);
                 addListenerToTable();
-
             }, // success
 
             error: function (xhr, status) {
@@ -146,10 +144,7 @@
             type: 'POST',
             data: formData,
             success: function (data) { // data 는 json & field;
-                const info_wrapper = $('.info-wrapper');
-                // info_wrapper.innerHTML = makeHtmlSyntax(data);
-                info_wrapper.html(makeHtmlSyntax(data));
-
+                makeTable(data);
             }, // success
 
             error: function (xhr, status) {
@@ -157,9 +152,9 @@
             }
         });
     }
-    function makeTable(data) {
-        const {data} = response;
 
+    function makeTable(response) {
+        const data = response;
         if (data[0] === null || data[0] === undefined) {
             throw new Error("something is going wrong!");
             return;
@@ -169,44 +164,67 @@
         const info_wrapper = $('.info-wrapper');
         const table = document.createElement('table');
         const tbody = document.createElement('tbody');
-        // const thead = '<table id="user-table-origin"><thead id="user-table-head"><tr id="user-table-tr"><th>체크</th>' + keys.map(e => {
-        //     return '<th>' + e + '</th>';
-        // }).join('') + '</tr></thead>';
         const thead = document.createElement('thead');
+        const tr = makeTrTag('user-table-tr');
+        tr.appendChild(makeThTag('체크'));
 
         table.setAttribute('id', 'user-table-origin');
         thead.setAttribute('id', 'user-table-head');
         tbody.setAttribute('id', 'user-table');
 
-        thead.append(
-            '<tr id="user-table-tr"><th>체크</th>' +
-            keys.map(e => {
-                return '<th>' + e + '</th>';
-            }).join('')
-        )
-        tbody.append(
-            data.map(e=>{
-               return addRow(e,idx);
-            }).join("")
-        );
-        // data.map((obj, idx) => { // elements 는 obj
-        //     const elements = Object.keys(obj);
-        //     return '<tr><td>' +
-        //         '<input type = "checkbox" id =' + `delete-checkbox${idx}` + ' class="delete-checkbox" value = "delete-check"/></td>' +
-        //         elements.map(e => {
-        //             return '<td>' + obj[e] + '</td>';
-        //         }).join('') + '</tr>';
-        // }).join('')
+        // thead 작성
+        thead.appendChild(tr);
+        keys.forEach(e=>{tr.append(makeThTag(e))});
+
+        // thead 작성
+        tbody.appendChild(thead);
+        data.forEach((e,idx)=>{tbody.append(addRow(e,idx))});
 
         table.appendChild(thead);
         table.appendChild(tbody);
-        info_wrapper.appendChild(table);
+        info_wrapper.html(table);
     }
-    function addRow(obj,idx) {
-        const elements = Object.keys(obj);
+    function makeThTag(text='',id=''){
+        const th = document.createElement('th');
+        th.innerHTML = text;
+        id === '' ? true : th.setAttribute('id',id);
+        return th;
+    }
+    function makeTrTag(id){
         const tr = document.createElement('tr');
+        tr.setAttribute('id',id);
+        return tr;
+    }
+    function makeTdTag(text='',id=''){
+        const td = document.createElement('td');
+        td.setAttribute('id',id);
+        td.innerHTML = text;
+        return td;
+    }
 
-        return
+    function addRow(obj, idx) {
+        // row 생성에 필요한 변수들 선언
+        const tr = makeTrTag();
+        const input_td = makeTdTag();
+        const input = document.createElement('input');
+        const elements = Object.keys(obj);
+
+        // 속성값 설정
+        input.setAttribute('type','checkbox');
+        input.setAttribute('id',`delete-checkbox${idx}`);
+        input.setAttribute('class',`delete-checkbox`);
+        input.setAttribute('value','delete-checkbox');
+
+        // append child
+        input_td.appendChild(input);
+        tr.appendChild(input_td);
+
+        elements.forEach(e=>{
+           const td = makeTdTag();
+           td.innerHTML = obj[e];
+           tr.appendChild(td);
+        });
+        return tr;
     }
 
     function makeHtmlSyntax(response) { // 테이블 생성.
