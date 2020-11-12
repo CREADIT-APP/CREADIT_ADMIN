@@ -52,7 +52,6 @@ function getCoachSchedule(name,title){
     const SQL = `SELECT * from Payment where `
 }
 function insertCoachDataByTel(name, tel, email = 'null') {
-    console.log({name, email, tel});
     const SQL = `INSERT IGNORE INTO Coach (name,email,tel) values(\"${name}\",\"${email}\",\"${tel}\")`;
     return executeSQL(SQL);
 }
