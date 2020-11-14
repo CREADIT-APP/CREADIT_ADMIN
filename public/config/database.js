@@ -30,10 +30,11 @@ function executeSQL(sql) {
 }
 
 // member sql
-function insertMember(name,tel,email='null'){ // 생년월일도 추가하면 좋을듯
+function insertMember(name, tel, email = 'null') { // 생년월일도 추가하면 좋을듯
     const SQL = `INSERT IGNORE INTO Member (name,email,tel) values(\"${name}\",\"${email}\",\"${tel}\")`;
     return executeSQL(SQL);
 }
+
 function getAllMemberList() {
     const SQL = `SELECT * FROM Member`;
     return executeSQL(SQL);
@@ -81,12 +82,28 @@ function deleteCoachInfoByTel(name, tel) {
     const SQL = `DELETE FROM Coach WHERE name=\"${name}\" AND tel=\"${tel}\"`;
     return executeSQL(SQL);
 }
-function getCoachPayments(id){
+
+function getCoachPayments(id) {
     const SQL =
-       `SELECT m.member_id,m.name,m.tel,m.email,p.payment_date,p.refund_account,p.youtube_link,p.payment_value
-        FROM Payment AS p
-        JOIN Member As m
+        `SELECT *
+        FROM Payment_tmp p
         WHERE p.coach_id=${id}`;
+    return executeSQL(SQL);
+}
+function checkCoachSchedule(id,start,end){ // affectedRow == 0 이면 db에 스켜줄 추가 가능
+    const SQL =
+    // 중복이 아닌 녀석들을 출력해준다.
+    //     `SELECT *
+    //     FROM Payment_tmp
+    //     WHERE start_date >= ${end}
+    //     OR ${start} >= end_date`;
+
+    // 중복인 녀석들을 출력해준다.
+        `SELECT *
+        FROM Payment_tmp
+        WHERE coach_id=${id}
+        AND start_date < ${end}
+        AND ${start} < end_date`;
     return executeSQL(SQL);
 }
 
@@ -96,7 +113,7 @@ module.exports = {
     executeSQL, createConnection,
 
     // coach sql
-    insertCoachDataByTel, getAllCoachList, getCoachInfo, deleteCoachInfoByTel,getCoachPayments,
+    insertCoachDataByTel, getAllCoachList, getCoachInfo, deleteCoachInfoByTel, getCoachPayments,checkCoachSchedule,
 
     // member sql
     getAllMemberList, insertMember, getMemberInfo,
