@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const {
     //coach
-    insertCoachDataByTel, getAllCoachList, deleteCoachInfoByTel, getCoachInfo, getCoachPayments,
+    insertCoachDataByTel, getAllCoachList, deleteCoachInfoByTel, getCoachInfo, getCoachPayments,updateCoachInfo,
 
     //member
     getAllMemberList, insertMember
@@ -10,11 +10,11 @@ const {
 
 router.post('/', (req, res) => {
     // db 접속해서 값을 리턴받아서 화에 뿌려주기
-    const {body} = req;
-    if (body.choose === "고객") {
+    const {choose,name,tel,mail} = req.body;
+    if (choose === "고객") {
 
-    } else if (body.choose === "코치") {
-        if (body.name === '' && body.tel === '' && body.mail === '') {
+    } else if (choose === "코치") {
+        if (name === '' && tel === '' && email === '') {
             getAllCoachList().then(data => {
                 console.log({data});
                 res.status(200).json(data);
@@ -81,6 +81,10 @@ router.post("/coach/register", (req, res) => { // coach 등록.
     const {name, tel} = req.body;
     insertCoachDataByTel(name, tel).then(data => res.send(data));
 });
+router.post("/coach/update",(req,res)=>{
+    const {coach_id,name,tel,email} = req.body;
+    updateCoachInfo(coach_id,name,tel,email).then(data=>{console.log(data);res.send(data)});
+})
 router.post("/coach/delete", (req, res) => { // coach 삭제.
     const {name, tel} = req.body;
     deleteCoachInfoByTel(name, tel).then(data => res.send(data));

@@ -82,6 +82,9 @@ th, td {
 tbody tr:hover {
     background-color:coral;
 }
+.editableColumnsStyle {
+
+}
 
 a:link { color:black; text-decoration: none;}
 a:visited { color: black; text-decoration: none;}

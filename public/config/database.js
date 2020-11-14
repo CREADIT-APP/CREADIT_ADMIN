@@ -30,7 +30,7 @@ function executeSQL(sql) {
 }
 
 // member sql
-function insertMember(name, tel, email = 'null') { // 생년월일도 추가하면 좋을듯
+function insertMember(name, tel, email = '') { // 생년월일도 추가하면 좋을듯
     const SQL = `INSERT IGNORE INTO Member (name,email,tel) values(\"${name}\",\"${email}\",\"${tel}\")`;
     return executeSQL(SQL);
 }
@@ -40,13 +40,13 @@ function getAllMemberList() {
     return executeSQL(SQL);
 }
 
-function getMemberInfo(name, tel = 'null', email = 'null') {
+function getMemberInfo(name, tel = '', email = '') {
     let SQL;
-    if (tel === 'null' && email === 'null') {
+    if (tel === '' && email === '') {
         SQL = `SELECT * FROM Member WHERE name=\"${name}\"`;
-    } else if (email === 'null') {
+    } else if (email === '') {
         SQL = `SELECT * FROM Member WHERE name=\"${name}\" AND tel=\"${tel}\"`;
-    } else if (tel === 'null') {
+    } else if (tel === '') {
         SQL = `SELECT * FROM Member WHERE name=\"${name}\" AND tel=\"${email}\"`;
     }
     return executeSQL(SQL);
@@ -56,18 +56,18 @@ function getMemberInfo(name, tel = 'null', email = 'null') {
 // function getCoachSchedule(name,title){
 //     // const SQL = `SELECT * from Payment where `
 // }
-function insertCoachDataByTel(name, tel, email = 'null') {
+function insertCoachDataByTel(name, tel, email = '') {
     const SQL = `INSERT IGNORE INTO Coach (name,email,tel) values(\"${name}\",\"${email}\",\"${tel}\")`;
     return executeSQL(SQL);
 }
 
-function getCoachInfo(name, tel = 'null', email = 'null') {
+function getCoachInfo(name, tel = '', email = '') {
     let SQL;
-    if (tel === 'null' && email === 'null') {
+    if (tel === '' && email === '') {
         SQL = `SELECT * FROM Coach WHERE name=\"${name}\"`;
-    } else if (email === 'null') {
+    } else if (email === '') {
         SQL = `SELECT * FROM Coach WHERE name=\"${name}\" AND tel=\"${tel}\"`;
-    } else if (tel === 'null') {
+    } else if (tel === '') {
         SQL = `SELECT * FROM Coach WHERE name=\"${name}\" AND tel=\"${email}\"`;
     }
     return executeSQL(SQL);
@@ -106,14 +106,17 @@ function checkCoachSchedule(id,start,end){ // affectedRow == 0 이면 db에 스�
         AND ${start} < end_date`;
     return executeSQL(SQL);
 }
-
+function updateCoachInfo(id,name='',tel='',email=''){
+    const SQL = `UPDATE Coach SET name=\"${name}\",tel=\"${tel}\",email=\"${email}\" WHERE coach_id=\"${id}\"`;
+    return executeSQL(SQL);
+}
 
 module.exports = {
     // sql base
     executeSQL, createConnection,
 
     // coach sql
-    insertCoachDataByTel, getAllCoachList, getCoachInfo, deleteCoachInfoByTel, getCoachPayments,checkCoachSchedule,
+    insertCoachDataByTel, getAllCoachList, getCoachInfo, deleteCoachInfoByTel, getCoachPayments,checkCoachSchedule,updateCoachInfo,
 
     // member sql
     getAllMemberList, insertMember, getMemberInfo,

@@ -52,32 +52,33 @@
     }
 
     function addListenerToTable() {
-        // const formData = $(".form-wrapper").serialize();
         document.querySelectorAll('#user-table tr')
-            .forEach(e => e.addEventListener("click", function () {
-                const tr = $(this);
-                const td = tr.children();
+            .forEach(e => {
+                e.addEventListener("click", function () {
+                    const tr = $(this);
+                    const td = tr.children();
 
-                const formData = {};
-                // formData['id'] = td.eq(1).text();
-                formData['id'] = td.eq(0).text();
-                $.ajax({
-                    cache: false,
-                    url: "/db/coach/payments",
-                    type: 'POST',
-                    data: formData,
-                    success: function (data) { // data 는 json & field;
-                        console.log(data);
-                        makeTable(data);
+                    const formData = {};
+                    formData['id'] = td.eq(2).text();
+                    // $(td).eq(0).setAttribute('pointer-events','none');
+                    $.ajax({
+                        cache: false,
+                        url: "/db/coach/payments",
+                        type: 'POST',
+                        data: formData,
+                        success: function (data) { // data 는 json & field;
+                            console.log(data);
+                            makeTable(data,false);
 
-                        // addListenerToTable();
-                    }, // success
+                            // addListenerToTable();
+                        }, // success
 
-                    error: function (xhr, status) {
-                        alert(xhr + " : " + status);
-                    }
+                        error: function (xhr, status) {
+                            alert(xhr + " : " + status);
+                        }
+                    });
                 });
-            }));
+            });
     }
 
     function checkIsEmpty() { // 유효성 체크.
@@ -127,8 +128,8 @@
             type: 'POST',
             data: formData,
             success: function (data) { // data 는 json & field;
-                makeTable(data);
-                addListenerToTable();
+                makeTable(data,true);
+                // addListenerToTable();
             }, // success
 
             error: function (xhr, status) {
@@ -145,7 +146,7 @@
             type: 'POST',
             data: formData,
             success: function (data) { // data 는 json & field;
-                makeTable(data);
+                makeTable(data,false);
             }, // success
 
             error: function (xhr, status) {
@@ -154,7 +155,7 @@
         });
     }
 
-    function makeTable(response) {
+    function makeTable(response,isfirstPage) {
         const data = response;
         if (data[0] === null || data[0] === undefined) {
             alert('조회 정보가 없거나 일시적 오류입니다.');
@@ -167,7 +168,10 @@
         const tbody = document.createElement('tbody');
         const thead = document.createElement('thead');
         const tr = makeTrTag('user-table-tr');
-        // tr.appendChild(makeThTag('체크'));
+        if(isfirstPage) {
+            tr.appendChild(makeThTag('확인'));
+            tr.appendChild(makeThTag('동작'));
+        }
 
         table.setAttribute('id', 'user-table-origin');
         thead.setAttribute('id', 'user-table-head');
@@ -179,43 +183,67 @@
             tr.append(makeThTag(e))
         });
 
-        // thead 작성
+        // tbody 작성
         tbody.appendChild(thead);
         data.forEach((e, idx) => {
-            tbody.append(addRow(e, idx))
+            tbody.append(addRow(e, isfirstPage))
         });
 
         table.appendChild(thead);
         table.appendChild(tbody);
         info_wrapper.html(table);
+        addClickListenerToModBtn();
     }
 
     function makeThTag(text = '', id = '') {
         const th = document.createElement('th');
         th.innerHTML = text;
-        id === '' ? true : th.setAttribute('id', id);
+        id === undefined ? true : th.setAttribute('id', id);
         return th;
     }
 
     function makeTrTag(id) {
         const tr = document.createElement('tr');
-        tr.setAttribute('id', id);
+        id === undefined ? true : tr.setAttribute('id', id);
         return tr;
     }
 
     function makeTdTag(text = '', id = '') {
         const td = document.createElement('td');
-        td.setAttribute('id', id);
+        id === undefined ? true : td.setAttribute('id', id);
         td.innerHTML = text;
         return td;
     }
 
-    function addRow(obj, idx) {
+    function addRow(obj, isfirstPage) {
         // row 생성에 필요한 변수들 선언
         const tr = makeTrTag();
-        const input_td = makeTdTag();
+        // const input_td = makeTdTag();
         // const input = document.createElement('input');
+        let button_td_mod;
+        let button_td_check;
+        if(isfirstPage){
+            button_td_mod = makeTdTag();
+            button_td_check = makeTdTag();
+
+            const mod_button = document.createElement('button');
+            const check_button = document.createElement('button');
+
+            mod_button.setAttribute('class', 'modify-btn');
+            check_button.setAttribute('class','check-btn');
+
+            mod_button.innerHTML = "수정";
+            check_button.innerHTML = "스케쥴";
+
+            button_td_mod.appendChild(mod_button);
+            button_td_check.appendChild(check_button);
+            tr.appendChild(button_td_check);
+            tr.appendChild(button_td_mod);
+        }
+
         const elements = Object.keys(obj);
+
+
 
         // 속성값 설정
         // input.setAttribute('type','checkbox');
@@ -233,6 +261,76 @@
             tr.appendChild(td);
         });
         return tr;
+    }
+
+    function addClickListenerToModBtn() {
+        $('.check-btn').click(function(){
+            const tr = $(this).parents('tr');
+            const td = tr.children();
+
+            const formData = {};
+            formData['id'] = td.eq(2).text();
+            // $(td).eq(0).setAttribute('pointer-events','none');
+            $.ajax({
+                cache: false,
+                url: "/db/coach/payments",
+                type: 'POST',
+                data: formData,
+                success: function (data) { // data 는 json & field;
+                    console.log(data);
+                    makeTable(data,true);
+
+                    // addListenerToTable();
+                }, // success
+
+                error: function (xhr, status) {
+                    alert(xhr + " : " + status);
+                }
+            });
+        });
+        $('.modify-btn').click(function () {
+            const text = $(this).text();
+            const tds = $(this).parents('tr').find('td'); // td 태그
+
+            if (text === "확인") {
+                const formData = {};
+                const th = $('thead tr').children();
+
+                formData[$(th).eq(2).text()] = $(tds).eq(2).text(); // id
+                formData[$(th).eq(3).text()] = $(tds).eq(3).find('input').val(); // name
+                formData[$(th).eq(4).text()] = $(tds).eq(4).find('input').val(); // tel
+                formData[$(th).eq(5).text()] = $(tds).eq(5).find('input').val(); // email
+                console.log(formData);
+                $.ajax({
+                    cache: false,
+                    url: "/db/coach/update",
+                    type: 'POST',
+                    data: formData,
+                    success: function (data) { // data 는 json & field;
+                        if (data['affectedRows'] == 0) {
+                            alert('업데이트중 오류가 발생했습니다.');
+                        } else {
+                            alert('성공적으로 작업을 수행했습니다.');
+                        }
+                    }, // success
+
+                    error: function (xhr, status) {
+                        alert(xhr + " : " + status);
+                    }
+                });
+            } else if (text === "수정") {
+                const tmp = [];
+                for(let i=3;i<6;++i) {
+                    tmp.push($(tds).eq(i).text());
+                }
+
+                $(tds).eq(3).html(`<input class="editableColumnsStyle" size="10" type="text" placeholder="${tmp[0]}"/>`);
+                $(tds).eq(4).html(`<input class="editableColumnsStyle" size="15" type="text" placeholder="${tmp[1]}"/>`);
+                $(tds).eq(5).html(`<input class="editableColumnsStyle" size="15" type="text" placeholder="${tmp[2]}"/>`);
+
+                $(this).text("확인");
+            }
+        });
     }
 
     function makeHtmlSyntax(response) { // 테이블 생성.
