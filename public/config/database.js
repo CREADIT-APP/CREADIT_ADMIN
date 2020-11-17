@@ -86,7 +86,7 @@ function deleteCoachInfoByTel(name, tel) {
 function getCoachPayments(id) {
     const SQL =
         `SELECT *
-        FROM Payment_tmp p
+        FROM Payment p
         WHERE p.coach_id=${id}`;
     return executeSQL(SQL);
 }
@@ -94,13 +94,13 @@ function checkCoachSchedule(id,start,end){ // affectedRow == 0 이면 db에 스�
     const SQL =
     // 중복이 아닌 녀석들을 출력해준다.
     //     `SELECT *
-    //     FROM Payment_tmp
+    //     FROM Payment
     //     WHERE start_date >= ${end}
     //     OR ${start} >= end_date`;
 
     // 중복인 녀석들을 출력해준다.
         `SELECT *
-        FROM Payment_tmp
+        FROM Payment
         WHERE coach_id=${id}
         AND start_date < ${end}
         AND ${start} < end_date`;
