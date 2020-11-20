@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    html, body {
+        width: 100%;
+        height: 100vh;
+        background-color: black;
+    }
+
+    .wrapper {
+        width: 80%;
+        height: 80%;
+        background-color: bisque;
+    }
+
+    #myTimer {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+    }
+    .input-wrapper {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+    }
+</style>
+<body>
+<div class="wrapper">
+    <div id="myTimer">
+        <div class="input-wrapper">
+            <input id="input_hour" type="text" placeholder="시간" size="3"/>
+            <input id="input_min" type="text" placeholder="분" size="3"/>
+            <input id="input_sec" type="text" placeholder="초" size="3"/>
+        </div>
+        <div id="hour-wrapper"></div>
+        <button id="timer-btn" onclick="startTimer()">시작</button>
+    </div>
+    <script>
+        function startTimer() {
+            document.getElementById("timer-btn").innerHTML = "정지";
+            const interval = setInterval(decrementTimer, 1000);
+            const h_wrapper = document.getElementById("hour-wrapper");
+
+            const date = new Date();
+            const hour = date.getHours();
+            const min = date.getMinutes();
+            const sec = date.getSeconds();
+
+            const h = 0;
+            const m = 0;
+            const s = 5;
+            // const m_wrapper = document.getElementById("min-wrapper");
+            // const s_wrapper = document.getElementById("sec-wrapper");
+
+            function timer() {
+                const date = new Date();
+                const hour = date.getHours();
+                const min = date.getMinutes();
+                const sec = date.getSeconds();
+
+                h_wrapper.innerHTML = `${hour} : ${min} : ${sec}`;
+            }
+
+            function decrementTimer() {
+                const t_date = new Date();
+                const t_hour = t_date.getHours() - hour;
+                const t_min = t_date.getMinutes() - min;
+                const t_sec = t_date.getSeconds() - sec;
+
+                if (t_hour === h && t_min === m && t_sec === s) {
+                    h_wrapper.innerHTML = `${h-t_hour} : ${m-t_min} : ${s-t_sec}`;
+                    alert("종료!");
+                    clearInterval(interval);
+                } else {
+                    h_wrapper.innerHTML = `${h-t_hour} : ${m-t_min} : ${s-t_sec}`;
+                }
+            }
+        }
+    </script>
+</div>
+</body>
+</html>
