@@ -128,9 +128,7 @@ function getItemTimeSpend(goodsNo) { // item_id가 아닌 item_goods로 변경
     return executeSQL(SQL);
 }
 function getItemInfo(goodsNo){
-    const SQL = `SELECT *  
-                  FROM Item
-                  WHERE goodsNo = ${goodsNo}`;
+    const SQL = `SELECT * FROM Item WHERE goodsNo = \"${goodsNo}\"`;
     return executeSQL(SQL);
 }
 
@@ -155,7 +153,8 @@ function checkScheduleDuplicate(coach_id, item_id, first_date, second_date, thir
                   AND ((p.start_date < \"${end_time[0]}\" AND \"${start_time[0]}\" < DATE_ADD(p.start_date, INTERVAL ${spend_time} HOUR))
                   AND (p.start_date < \"${end_time[1]}\" AND \"${start_time[1]}\" < DATE_ADD(p.start_date, INTERVAL ${spend_time} HOUR))
                   AND (p.start_date < \"${end_time[2]}\" AND \"${start_time[2]}\" < DATE_ADD(p.start_date, INTERVAL ${spend_time} HOUR)))`; // 각 조인 컬럼에 대해서 조건문 탐
-    return SQL;
+
+    return executeSQL(SQL.replace(/[\n]/g,''));
     //return executeSQL(SQL);
 }
 
