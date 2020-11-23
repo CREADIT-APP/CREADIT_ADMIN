@@ -16,7 +16,7 @@ app.listen(3000, () => {
 });
 
 app.post('/data/submit', (req, res, next) => {
-    const {body: {first_from_date, second_from_date, third_from_date, coach_id, goodsNo, orderName, orderCellPhone, orderYoutubeLink, orderEmail, orderRefundAccount, orderRefundBank}} = req;
+    const {body: {first_from_date, second_from_date, third_from_date, coach_id, item_id, goodsNo, orderName, orderCellPhone, orderYoutubeLink, orderEmail, orderRefundAccount, orderRefundBank}} = req;
 
     getItemTimeSpend(goodsNo)
         .then(spend_time => {
@@ -25,13 +25,14 @@ app.post('/data/submit', (req, res, next) => {
         .then(dup_result => {
             console.log({dup_result});
             //만약 select된 row가 0 일 경우 중복된게 없다는 뜻.
-            if (dup_result.length===0) {
-                return getItemInfo(goodsNo)
-                    .then(result => {
-                        const item_id = result[0]["item_id"];
-                        // console.log({first_from_date,second_from_date,third_from_date});
-                        return insertCandidateData(first_from_date, second_from_date, third_from_date, coach_id, item_id, orderName, orderCellPhone, orderEmail, orderYoutubeLink, orderRefundAccount, orderRefundBank)
-                    });
+            if (dup_result.length === 0) {
+                return insertCandidateData(first_from_date, second_from_date, third_from_date, coach_id, item_id, orderName, orderCellPhone, orderEmail, orderYoutubeLink, orderRefundAccount, orderRefundBank);
+                // return getItemInfo(goodsNo)
+                //     .then(result => {
+                //         const item_id = result[0]["item_id"];
+                //         // console.log({first_from_date,second_from_date,third_from_date});
+                //         return insertCandidateData(first_from_date, second_from_date, third_from_date, coach_id, item_id, orderName, orderCellPhone, orderEmail, orderYoutubeLink, orderRefundAccount, orderRefundBank)
+                //     });
             } else { // 중복일 경우
                 return "tuple_dup";
             }
@@ -41,7 +42,7 @@ app.post('/data/submit', (req, res, next) => {
             console.log({insert_result});
             if (insert_result === "tup_dup") {
                 return res.status(200).json({message: "sql insert fail"});
-            } else if (insert_result['affectedRows'] == 0) {
+            } else{ // if (insert_result['affectedRows'] == 0)
                 return res.status(200).json({message: "sql insert success"});
             }
         })
@@ -52,10 +53,10 @@ app.post('/data/submit', (req, res, next) => {
 });
 app.post('/item', (req, res) => {
     // const goodsNo = req.query.goodsNo;
-    const {body:{goodsNo}} = req;
+    const {body: {goodsNo}} = req;
     getItemInfo(goodsNo).then(data => {
         res.status(200)
-            .json({timespend: `${data[0]["timespend"]}`, coach_id: `${data[0]["coach_id"]}`});
+            .json({timespend: `${data[0]["timespend"]}`, coach_id: `${data[0]["coach_id"]}`,item_id:`${data[0]["item_id"]}`});
     });
 });
 app.get('/', (req, res) => {
