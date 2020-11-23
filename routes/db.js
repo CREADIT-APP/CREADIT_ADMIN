@@ -5,7 +5,10 @@ const {
     insertCoachDataByTel, getAllCoachList, deleteCoachInfoByTel, getCoachInfo, getCoachPayments,updateCoachInfo,
 
     //member
-    getAllMemberList, insertMember
+    getAllMemberList, insertMember,
+
+    //candidate
+    showCandidateList
 } = require("../public/config/database");
 
 router.post('/', (req, res) => {
@@ -88,6 +91,15 @@ router.post("/coach/update",(req,res)=>{
 router.post("/coach/delete", (req, res) => { // coach 삭제.
     const {name, tel} = req.body;
     deleteCoachInfoByTel(name, tel).then(data => res.send(data));
+});
+
+router.post("/candidate",(req,res)=>{
+    const {coach_id} = req.body;
+    showCandidateList(coach_id).then(data=>{res.status(200).send(data)});
+});
+router.post("/candidate/register",(req,res)=>{
+   const {id} = req.body;
+
 });
 router.get('/register', (req, res) => { // coach 등록/삭제 화면
     res.status(200).render('register.html');

@@ -176,6 +176,13 @@ function getFormatDate(date){
     sec = sec >= 10 ? sec : '0' + sec;
     return year + '-' + month + '-' + day + ' ' + hour + ':' + min + ":" + sec;
 }
+function showCandidateList(coach_id){
+    const SQL = `SELECT * FROM Candidate WHERE coach_id=\"${coach_id}\"`;
+    return executeSQL(SQL);
+}
+function insertCandidateIntoPayment(id) {
+
+}
 module.exports = {
     // sql base
     executeSQL,
@@ -198,6 +205,8 @@ module.exports = {
     // Candidate
     insertCandidateData,
     checkScheduleDuplicate,
+    insertCandidateIntoPayment,
+    showCandidateList,
 
     // item
     getItemTimeSpend,

@@ -85,6 +85,24 @@ tbody tr:hover {
 .editableColumnsStyle {
 
 }
+.payment-btn {
+    border: 2px solid black;
+    width: 90px;
+    font-weight: bold;
+}
+.candidate-btn {
+    border: 2px solid black;
+    width: 90px;
+    font-weight: bold;
+}
+.button-div {
+    width: 100%;
+    margin-top: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
 
 a:link { color:black; text-decoration: none;}
 a:visited { color: black; text-decoration: none;}
